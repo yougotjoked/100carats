@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#07100b">
+  <meta name="description" content="100 CARATS — молодёжный любительский OSINT-проект. Учимся искать, проверять и анализировать информацию из открытых источников вместе.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="100 CARATS — OSINT сообщество">
+  <meta property="og:description" content="Открытые источники. Ясные выводы. Сообщество людей, которые любят разбираться.">
+  <meta name="color-scheme" content="dark">
+  <title>100 CARATS — OSINT Project</title>
+  <style>
+    :root {
+      --bg: #07100b;
+      --bg-2: #0b1610;
+      --surface: #0e1b14;
+      --surface-2: #122119;
+      --stroke: rgba(179, 240, 175, .13);
+      --stroke-strong: rgba(179, 240, 175, .24);
+      --text: #f0f7ef;
+      --muted: #96a99a;
+      --green: #baff79;
+      --green-2: #79eaa2;
+      --green-dark: #213e25;
+      --shadow: 0 20px 70px rgba(0,0,0,.30);
+      --container: 1192px;
+      --radius: 22px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 100px; }
+    body { margin: 0; min-width: 320px; background: var(--bg); color: var(--text); font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+    ::selection { background: var(--green); color: var(--bg); }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    button:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px solid var(--green); outline-offset: 5px; }
+    .container { width: min(calc(100% - 48px), var(--container)); margin-inline: auto; }
+    .noise { position: fixed; inset: 0; pointer-events: none; z-index: 30; opacity: .035; background-image: url('data:image/svg+xml,%3Csvg viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="n"%3E%3CfeTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23n)" opacity=".5"/%3E%3C/svg%3E'); }
+    .top-glow { position: absolute; z-index: -1; left: 50%; top: -290px; width: min(1050px, 120vw); height: 840px; transform: translateX(-50%); background: radial-gradient(ellipse at center, rgba(69,148,69,.15), transparent 68%); pointer-events: none; }
+    .site-header { height: 84px; position: sticky; top: 0; z-index: 20; border-bottom: 1px solid rgba(188,255,160,.08); backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px); background: rgba(7,16,11,.78); }
+    .nav { height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 28px; }
+    .brand { display: inline-flex; align-items: center; gap: 12px; flex-shrink: 0; font-weight: 800; font-size: 18px; letter-spacing: -.055em; }
+    .brand-mark { width: 37px; height: 37px; background: var(--green); display: grid; place-items: center; border-radius: 11px; box-shadow: 0 0 26px rgba(186,255,121,.16); }
+    .brand-mark svg { width: 25px; stroke: #0a150b; stroke-width: 1.6; fill: none; }
+    .brand b { color: var(--green); }
+    .desktop-links { display: flex; align-items: center; gap: 29px; }
+    .desktop-links a { color: #b1c3b3; font-size: 13px; transition: color .2s; }
+    .desktop-links a:hover { color: var(--green); }
+    .btn { border: 1px solid transparent; display: inline-flex; justify-content: center; align-items: center; gap: 10px; padding: 14px 19px; min-height: 47px; font-size: 13px; font-weight: 750; letter-spacing: -.01em; border-radius: 11px; cursor: pointer; transition: background .2s, transform .2s, border-color .2s, box-shadow .2s; }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary { color: #07120b; background: var(--green); box-shadow: 0 5px 30px rgba(186,255,121,.10); }
+    .btn-primary:hover { background: #d4ffa9; box-shadow: 0 7px 38px rgba(186,255,121,.19); }
+    .btn-secondary { background: rgba(186,255,121,.045); border-color: var(--stroke-strong); color: var(--text); }
+    .btn-secondary:hover { border-color: var(--green); background: rgba(186,255,121,.075); }
+    .btn svg, .text-link svg { width: 16px; height: 16px; flex-shrink: 0; }
+    .menu-button { display: none; background: transparent; color: var(--text); border: 1px solid var(--stroke); border-radius: 10px; height: 43px; width: 43px; cursor: pointer; }
+    .mobile-menu { display: none; }
+    .hero { position: relative; overflow: hidden; padding: 111px 0 100px; }
+    .hero-grid { display: grid; grid-template-columns: 1.05fr .95fr; align-items: center; gap: 32px; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 10px; color: var(--green); font-size: 11px; font-weight: 780; text-transform: uppercase; letter-spacing: .22em; }
+    .eyebrow:before { content: ""; width: 6px; height: 6px; flex-shrink: 0; border-radius: 100%; background: var(--green); box-shadow: 0 0 0 5px rgba(186,255,121,.08), 0 0 18px var(--green); }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin: 25px 0 23px; font-size: clamp(51px, 5.4vw, 82px); line-height: 1.065; letter-spacing: -.075em; font-weight: 810; }
+    h1 .accent { color: var(--green); }
+    .hero-description { max-width: 515px; color: #a7b9aa; font-size: 16px; line-height: 1.8; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 11px; margin-top: 34px; }
+    .hero-notes { display: flex; gap: 28px; margin-top: 58px; }
+    .hero-note { display: flex; align-items: flex-start; gap: 11px; max-width: 178px; }
+    .hero-note svg { width: 20px; height: 20px; color: var(--green); margin-top: 2px; flex-shrink: 0; }
+    .hero-note span { font-size: 12px; line-height: 1.55; color: var(--muted); }
+    .hero-note strong { display: block; margin-bottom: 4px; color: var(--text); font-size: 12px; }
+    .graph-card { min-height: 510px; border: 1px solid var(--stroke); border-radius: 26px; overflow: hidden; background: radial-gradient(circle at 49% 48%, rgba(54,130,67,.19), transparent 44%), linear-gradient(155deg,#0d2016,#09120d 65%); box-shadow: var(--shadow); position: relative; isolation: isolate; }
+    .graph-card:before { content: ""; inset: 0; position: absolute; pointer-events: none; opacity: .29; background-image: linear-gradient(rgba(186,255,121,.065) 1px, transparent 1px), linear-gradient(90deg,rgba(186,255,121,.065) 1px,transparent 1px); background-size: 29px 29px; mask-image: linear-gradient(to bottom,black,transparent 90%); }
+    .graph-bar { position: absolute; top: 21px; left: 23px; right: 23px; display: flex; justify-content: space-between; align-items: center; z-index: 3; font-size: 9px; font-weight: 700; letter-spacing: .16em; color: #bdd2bd; }
+    .graph-bar .live { display: flex; align-items: center; gap: 8px; }
+    .graph-bar .live:before { content: ""; background: var(--green); border-radius: 50%; width: 5px; height: 5px; box-shadow: 0 0 0 5px rgba(186,255,121,.08); animation: pulse 1.8s ease-in-out infinite; }
+    @keyframes pulse { 50% { opacity: .45; box-shadow: 0 0 0 9px rgba(186,255,121,0); } }
+    .graph-canvas { display: block; width: 100%; height: 510px; cursor: crosshair; }
+    .graph-footer { position: absolute; bottom: 18px; left: 20px; right: 20px; z-index: 3; display: flex; align-items: end; justify-content: space-between; gap: 12px; }
+    .graph-footer .graph-caption { font-size: 11px; color: #a4b9a4; line-height: 1.6; }
+    .graph-footer .graph-caption strong { color: var(--green); font-size: 12px; display: block; font-weight: 650; }
+    .graph-toggle { background: rgba(11,23,15,.8); border: 1px solid var(--stroke-strong); border-radius: 9px; color: #cadcca; padding: 9px 11px; cursor: pointer; font-size: 10px; white-space: nowrap; }
+    .graph-toggle:hover { color: var(--green); border-color: var(--green); }
+    .graph-tooltip { position: absolute; top: 77px; left: 21px; z-index: 4; padding: 8px 11px; background: #14281a; color: var(--green); border: 1px solid var(--stroke-strong); border-radius: 9px; font-size: 11px; pointer-events: none; opacity: 0; transform: translateY(6px); transition: opacity .2s, transform .2s; }
+    .graph-tooltip.visible { opacity: 1; transform: translateY(0); }
+    .separator-line { border: 0; border-top: 1px solid rgba(186,255,121,.09); }
+    .ticker { overflow: hidden; padding: 18px 0; border-block: 1px solid rgba(186,255,121,.09); background: #0a160e; }
+    .ticker-track { display: flex; width: max-content; gap: 42px; animation: ticker 33s linear infinite; color: #829b84; letter-spacing: .16em; font-size: 11px; font-weight: 750; }
+    .ticker-track span { white-space: nowrap; }
+    .ticker-track .diamond { color: var(--green); font-size: 12px; }
+    @keyframes ticker { to { transform: translateX(-50%); } }
+    section.section { padding: 110px 0; }
+    .section-head { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 38px; }
+    .section-title { font-size: clamp(35px, 4vw, 56px); letter-spacing: -.06em; line-height: 1.12; margin: 15px 0 0; font-weight: 780; }
+    .section-copy { color: var(--muted); max-width: 405px; font-size: 14px; line-height: 1.8; margin-bottom: 3px; }
+    .about-layout { display: grid; grid-template-columns: 1.05fr .95fr; gap: 18px; }
+    .about-feature { padding: 34px; border: 1px solid var(--stroke); background: linear-gradient(143deg,#122419,#0a160e); border-radius: var(--radius); min-height: 344px; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; }
+    .about-feature:after { content: ""; position: absolute; border: 1px solid rgba(186,255,121,.15); border-radius: 50%; height: 270px; width: 270px; top: -124px; right: -115px; box-shadow: 0 0 0 44px rgba(186,255,121,.018), 0 0 0 90px rgba(186,255,121,.014); }
+    .symbol { color: var(--green); font-size: 42px; font-weight: 300; line-height: 1; }
+    .about-feature h3 { font-size: clamp(26px, 3vw, 37px); letter-spacing: -.05em; line-height: 1.2; max-width: 380px; margin: 28px 0 12px; }
+    .about-feature p { color: var(--muted); line-height: 1.75; max-width: 460px; margin: 0; font-size: 14px; }
+    .values { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .value-card { padding: 25px; border: 1px solid var(--stroke); background: #0d1a12; border-radius: var(--radius); min-height: 160px; display: flex; flex-direction: column; justify-content: space-between; transition: border .2s, background .2s, transform .2s; }
+    .value-card:hover { transform: translateY(-3px); border-color: var(--stroke-strong); background: #102016; }
+    .value-card svg { color: var(--green); width: 24px; height: 24px; }
+    .value-card strong { font-size: 14px; letter-spacing: -.02em; }
+    .value-card span { color: var(--muted); line-height: 1.5; font-size: 12px; margin-top: 7px; }
+    .channels { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .channel-card { border: 1px solid var(--stroke); border-radius: var(--radius); min-height: 200px; padding: 26px; display: flex; flex-direction: column; align-items: flex-start; background: var(--surface); transition: transform .2s, border-color .2s, background .2s; }
+    .channel-card:hover { transform: translateY(-4px); border-color: rgba(186,255,121,.45); background: #14261a; }
+    .channel-top { width: 100%; display: flex; justify-content: space-between; align-items: flex-start; }
+    .channel-top svg { color: var(--green); width: 26px; height: 26px; }
+    .channel-top .arrow { width: 17px; color: #77937c; }
+    .channel-card h3 { font-size: 18px; margin: auto 0 7px; letter-spacing: -.035em; }
+    .channel-card p { color: var(--muted); font-size: 12px; line-height: 1.65; margin: 0; }
+    .services { background: #09150e; border-top: 1px solid var(--stroke); border-bottom: 1px solid var(--stroke); }
+    .service-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+    .service-card { display: flex; flex-direction: column; border: 1px solid var(--stroke); border-radius: 24px; background: linear-gradient(160deg,#101e15,#0b1710); padding: 31px; min-height: 350px; position: relative; overflow: hidden; transition: transform .25s, border-color .25s; }
+    .service-card:hover { transform: translateY(-4px); border-color: rgba(186,255,121,.36); }
+    .service-card.featured { border-color: rgba(186,255,121,.45); background: radial-gradient(ellipse at 88% 10%, rgba(186,255,121,.085), transparent 42%), linear-gradient(155deg, #152a1a, #0b1710); }
+    .service-top { display: flex; gap: 12px; align-items: center; justify-content: space-between; margin-bottom: 26px; }
+    .service-type { font-size: 10px; color: var(--green); font-weight: 750; letter-spacing: .16em; text-transform: uppercase; }
+    .offer { font-size: 10px; color: var(--green); background: rgba(186,255,121,.095); border: 1px solid rgba(186,255,121,.22); border-radius: 99px; padding: 8px 10px; white-space: nowrap; font-weight: 800; }
+    .service-card h3 { font-size: 25px; margin: 0 0 12px; line-height: 1.15; letter-spacing: -.045em; }
+    .service-card p { color: var(--muted); margin-bottom: 17px; font-size: 13px; line-height: 1.78; }
+    .service-detail { font-size: 12px; color: #c0d3c1; margin-top: -1px; display: flex; gap: 10px; align-items: flex-start; }
+    .service-detail::before { content: '↗'; color: var(--green); }
+    .service-bottom { margin-top: auto; padding-top: 28px; display: flex; justify-content: space-between; align-items: end; gap: 12px; }
+    .price { font-size: 36px; line-height: 1; letter-spacing: -.055em; font-weight: 800; }
+    .price small { color: var(--muted); font-size: 13px; font-weight: 500; letter-spacing: 0; }
+    .old-price { color: #728b78; font-size: 16px; text-decoration: line-through; margin-left: 9px; }
+    .price-caption { display: block; margin-top: 7px; color: #8ea58f; font-size: 11px; }
+    .service-card .btn { padding-inline: 16px; white-space: nowrap; }
+    .service-notice { margin: 24px 0 0; color: #849d88; font-size: 12px; line-height: 1.75; }
+    .mentor-strip { padding: 34px; border: 1px solid var(--stroke-strong); background: radial-gradient(circle at 85% 45%, rgba(186,255,121,.11), transparent 38%), #0e1b13; border-radius: var(--radius); display: flex; align-items: center; justify-content: space-between; gap: 40px; }
+    .mentor-strip h3 { font-size: 27px; line-height: 1.2; letter-spacing: -.05em; margin: 13px 0; }
+    .mentor-strip p { color: var(--muted); max-width: 730px; line-height: 1.8; font-size: 13px; margin: 0; }
+    .mentor-strip .btn { white-space: nowrap; }
+    .faq-layout { display: grid; grid-template-columns: .85fr 1.15fr; gap: 65px; }
+    .faq-wrap { border-top: 1px solid var(--stroke-strong); }
+    details { border-bottom: 1px solid var(--stroke-strong); padding: 22px 2px; }
+    summary { list-style: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 20px; font-size: 15px; font-weight: 650; }
+    summary::-webkit-details-marker { display: none; }
+    summary:after { content: '+'; display: grid; place-items: center; width: 25px; height: 25px; flex-shrink: 0; font-size: 23px; line-height: 1; font-weight: 400; color: var(--green); transition: transform .25s; }
+    details[open] summary:after { transform: rotate(45deg); }
+    details p { padding-right: 28px; color: var(--muted); font-size: 13px; line-height: 1.8; margin: 15px 0 0; }
+    .contact { border-radius: 28px; padding: clamp(34px, 5vw, 64px); border: 1px solid rgba(186,255,121,.33); background: radial-gradient(ellipse at 88% 30%, rgba(186,255,121,.12), transparent 48%), linear-gradient(120deg,#162b1b,#0d1b12); text-align: center; position: relative; overflow: hidden; }
+    .contact:before, .contact:after { content: ""; position: absolute; width: 230px; height: 230px; border: 1px solid rgba(186,255,121,.11); border-radius: 50%; pointer-events: none; }
+    .contact:before { left: -140px; bottom: -160px; }
+    .contact:after { right: -130px; top: -160px; }
+    .contact h2 { font-size: clamp(34px,4.7vw,55px); line-height: 1.1; margin: 15px 0; letter-spacing: -.065em; }
+    .contact p { color: #afc2af; font-size: 14px; margin-bottom: 27px; line-height: 1.75; }
+    .footer { margin-top: 92px; border-top: 1px solid var(--stroke); padding: 30px 0 37px; }
+    .footer-inner { display: flex; align-items: center; gap: 20px; justify-content: space-between; }
+    .footer .brand { font-size: 15px; }
+    .footer .brand-mark { width: 29px; height: 29px; border-radius: 8px; }
+    .footer .brand-mark svg { width: 21px; }
+    .footer-note { color: #718977; font-size: 11px; line-height: 1.7; }
+    .footer-links { display: flex; gap: 20px; }
+    .footer-links a { color: var(--muted); font-size: 12px; }
+    .footer-links a:hover { color: var(--green); }
+    .reveal { opacity: 0; transform: translateY(22px); transition: opacity .8s ease, transform .8s cubic-bezier(.22,1,.36,1); }
+    .reveal.visible { opacity: 1; transform: none; }
+    .dialog-backdrop { display: none; position: fixed; z-index: 50; inset: 0; padding: 20px; align-items: center; justify-content: center; background: rgba(2,9,5,.82); backdrop-filter: blur(9px); }
+    .dialog-backdrop.open { display: flex; }
+    .dialog { width: min(100%, 490px); border: 1px solid rgba(186,255,121,.32); border-radius: 23px; background: #112016; padding: 29px; box-shadow: 0 25px 120px rgba(0,0,0,.5); }
+    .dialog-head { display: flex; justify-content: space-between; gap: 20px; align-items: flex-start; }
+    .dialog h2 { font-size: 26px; letter-spacing: -.045em; margin: 11px 0 8px; }
+    .dialog p { font-size: 13px; line-height: 1.8; color: var(--muted); }
+    .close-modal { border: 1px solid var(--stroke); color: var(--text); background: rgba(255,255,255,.025); border-radius: 9px; width: 36px; height: 36px; cursor: pointer; font-size: 20px; flex-shrink: 0; }
+    .message-preview { padding: 17px; border: 1px solid var(--stroke); border-radius: 13px; background: #09170f; font-size: 12px; line-height: 1.7; color: #d7ead7; white-space: pre-wrap; }
+    .modal-actions { display: flex; flex-wrap: wrap; margin-top: 20px; gap: 10px; }
+    .toast { position: fixed; z-index: 100; bottom: 26px; left: 50%; transform: translate(-50%,20px); opacity: 0; pointer-events: none; background: var(--green); color: #061108; padding: 12px 19px; border-radius: 10px; font-size: 12px; font-weight: 800; transition: opacity .2s, transform .2s; }
+    .toast.show { opacity: 1; transform: translate(-50%,0); }
+    @media(max-width: 1030px) {
+      .desktop-links { gap: 18px; }
+      .hero-grid { gap: 20px; }
+      .hero { padding-top: 78px; }
+      .graph-card, .graph-canvas { min-height: 440px; height: 440px; }
+      .service-card { padding: 24px; }
+      .service-bottom { align-items: flex-start; flex-direction: column; }
+      .service-card .btn { width: 100%; }
+    }
+    @media(max-width: 760px) {
+      .container { width: min(calc(100% - 36px), var(--container)); }
+      .site-header { height: 69px; }
+      .desktop-links, .nav > .btn { display: none; }
+      .menu-button { display: grid; place-items: center; }
+      .menu-button svg { width: 20px; height: 20px; }
+      .mobile-menu { display: none; position: absolute; top: 68px; left: 0; right: 0; padding: 10px 18px 20px; border-bottom: 1px solid var(--stroke-strong); background: #0b1810; box-shadow: 0 20px 30px rgba(0,0,0,.3); }
+      .mobile-menu.open { display: flex; flex-direction: column; }
+      .mobile-menu a { font-size: 14px; padding: 13px 8px; color: #d1e3d1; }
+      .mobile-menu .btn { margin-top: 8px; }
+      .hero { padding: 75px 0 65px; }
+      .hero-grid, .about-layout, .faq-layout { grid-template-columns: 1fr; }
+      .hero-grid { gap: 45px; }
+      h1 { font-size: clamp(50px, 11vw, 72px); }
+      .hero-notes { margin-top: 34px; }
+      .graph-card, .graph-canvas { height: 410px; min-height: 410px; }
+      section.section { padding: 75px 0; }
+      .section-head { display: block; }
+      .section-copy { margin-top: 16px; }
+      .faq-layout { gap: 30px; }
+      .mentor-strip { align-items: flex-start; flex-direction: column; gap: 23px; }
+      .channels { grid-template-columns: 1fr; }
+      .channel-card { min-height: 160px; }
+      .service-grid { grid-template-columns: 1fr; }
+      .service-card { min-height: 310px; }
+      .service-bottom { flex-direction: row; align-items: end; }
+      .service-card .btn { width: auto; }
+      .footer-inner { align-items: flex-start; flex-direction: column; gap: 20px; }
+    }
+    @media(max-width: 480px) {
+      .brand { font-size: 16px; }
+      h1 { font-size: clamp(47px, 12vw, 60px); }
+      .hero-description { font-size: 14px; }
+      .hero-actions { flex-direction: column; }
+      .hero-actions .btn { width: 100%; }
+      .hero-notes { gap: 13px; }
+      .hero-note { gap: 8px; }
+      .hero-note span, .hero-note strong { font-size: 10px; }
+      .hero-note svg { width: 17px; }
+      .graph-card, .graph-canvas { height: 365px; min-height: 365px; }
+      .values { gap: 10px; }
+      .value-card { padding: 18px; min-height: 155px; }
+      .about-feature { padding: 25px; min-height: 310px; }
+      .service-card { padding: 24px; }
+      .service-bottom { flex-direction: column; align-items: stretch; }
+      .service-card .btn { width: 100%; }
+      .contact { padding: 40px 20px; }
+    }
+    @media(prefers-reduced-motion: reduce) {
+      *, *:before, *:after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+      .reveal { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="noise" aria-hidden="true"></div>
+  <header class="site-header">
+    <nav class="container nav" aria-label="Главная навигация">
+      <a class="brand" href="#home" aria-label="100 CARATS, на главную">
+        <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M3 12 9 5h14l6 7-13 15L3 12Z"/><path d="M3 12h26M9 5l7 7 7-7M16 12v15M9 5l-2 7 9 15 9-15-2-7"/></svg></span>
+        <span>100 <b>CARATS</b></span>
+      </a>
+      <div class="desktop-links">
+        <a href="#about">О проекте</a><a href="#community">Сообщество</a><a href="#services">Услуги</a><a href="#mentorship">Менторство</a><a href="#faq">Вопросы</a>
+      </div>
+      <a href="https://t.me/jester_os1nt" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Связаться <span aria-hidden="true">↗</span></a>
+      <button class="menu-button" id="menuButton" type="button" aria-expanded="false" aria-controls="mobileMenu" aria-label="Открыть меню"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    </nav>
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="#about">О проекте</a><a href="#community">Сообщество</a><a href="#services">Услуги</a><a href="#mentorship">Менторство</a><a href="#faq">Вопросы</a>
+      <a href="https://t.me/jester_os1nt" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Связаться с владельцем ↗</a>
+    </div>
+  </header>
+
+  <main id="home">
+    <section class="hero">
+      <div class="top-glow" aria-hidden="true"></div>
+      <div class="container hero-grid">
+        <div class="hero-left reveal">
+          <span class="eyebrow">Молодёжный OSINT-проект</span>
+          <h1>Смотри глубже.<br><span class="accent">Думай шире.</span></h1>
+          <p class="hero-description">100 CARATS — любительское сообщество об исследовании открытых источников. Мы учимся находить важное среди информационного шума, проверять факты и превращать разрозненные сведения в понятную картину.</p>
+          <div class="hero-actions">
+            <a href="https://t.me/stokarat0" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Перейти в проект <span aria-hidden="true">↗</span></a>
+            <a href="#services" class="btn btn-secondary">Посмотреть услуги <span aria-hidden="true">↓</span></a>
+          </div>
+          <div class="hero-notes">
+            <div class="hero-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 5 5"/></svg><span><strong>Исследуем</strong>Открытые источники</span></div>
+            <div class="hero-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="m4 12 5 5L20 6"/><circle cx="12" cy="12" r="10"/></svg><span><strong>Проверяем</strong>Факты и контекст</span></div>
+            <div class="hero-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M16 20v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM22 20v-2a4 4 0 0 0-3-3.87M16 2.13a4 4 0 0 1 0 7.75"/></svg><span><strong>Растём</strong>Вместе с вами</span></div>
+          </div>
+        </div>
+        <div class="graph-card reveal" aria-label="Анимированная визуализация связей между открытыми источниками, фактами и выводами">
+          <div class="graph-bar"><span class="live">ГРАФ СВЯЗЕЙ / LIVE</span><span>100 CARATS • OSINT</span></div>
+          <canvas id="graphCanvas" class="graph-canvas" aria-hidden="true"></canvas>
+          <span id="graphTooltip" class="graph-tooltip" aria-hidden="true"></span>
+          <div class="graph-footer"><div class="graph-caption"><strong>Каждая связь имеет значение.</strong>Наведите на точки графа</div><button class="graph-toggle" id="graphToggle" type="button" aria-pressed="false">Пауза ⏸</button></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="ticker" aria-hidden="true"><div class="ticker-track" id="tickerTrack">
+      <span>ОТКРЫТЫЕ ИСТОЧНИКИ</span><span class="diamond">✧</span><span>ПРОВЕРКА ФАКТОВ</span><span class="diamond">✧</span><span>АНАЛИЗ СВЯЗЕЙ</span><span class="diamond">✧</span><span>ЛЮБОЗНАТЕЛЬНОСТЬ</span><span class="diamond">✧</span><span>ОБЩЕЕ РАЗВИТИЕ</span><span class="diamond">✧</span>
+      <span>ОТКРЫТЫЕ ИСТОЧНИКИ</span><span class="diamond">✧</span><span>ПРОВЕРКА ФАКТОВ</span><span class="diamond">✧</span><span>АНАЛИЗ СВЯЗЕЙ</span><span class="diamond">✧</span><span>ЛЮБОЗНАТЕЛЬНОСТЬ</span><span class="diamond">✧</span><span>ОБЩЕЕ РАЗВИТИЕ</span><span class="diamond">✧</span>
+    </div></div>
+
+    <section id="about" class="section">
+      <div class="container">
+        <div class="section-head reveal"><div><span class="eyebrow">Кто мы</span><h2 class="section-title">Не просто поиск.<br>Способ мыслить.</h2></div><p class="section-copy">Мы — молодой любительский проект. Не изображаем всезнающих экспертов: исследуем, задаём вопросы, делимся находками и учимся вместе с участниками.</p></div>
+        <div class="about-layout">
+          <article class="about-feature reveal"><span class="symbol" aria-hidden="true">✳</span><div><h3>Любопытство — наша отправная точка.</h3><p>Обсуждаем реальные приёмы OSINT, разбираем учебные кейсы, тренируем критическое мышление и учимся делать выводы на основе доказательств, а не догадок.</p></div></article>
+          <div class="values">
+            <div class="value-card reveal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 1v4m0 14v4M1 12h4m14 0h4"/></svg><div><strong>Точность</strong><br><span>Сверяем источники и не путаем факты с предположениями.</span></div></div>
+            <div class="value-card reveal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg><div><strong>Этика</strong><br><span>Работаем с законно доступными данными и уважаем приватность.</span></div></div>
+            <div class="value-card reveal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="7" r="2"/><circle cx="12" cy="18" r="2"/><path d="m7.7 7.1 8.6-.2M7.2 7.7l4 8.5m5.8-7.5-4.1 7.5"/></svg><div><strong>Контекст</strong><br><span>Собираем отдельные детали в цельную картину.</span></div></div>
+            <div class="value-card reveal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="8" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M2 20v-2a6 6 0 0 1 12 0v2m2-8a5 5 0 0 1 6 5v3h-5"/></svg><div><strong>Сообщество</strong><br><span>Разбираемся вместе — независимо от опыта.</span></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="community" class="section" style="padding-top: 15px">
+      <div class="container">
+        <div class="section-head reveal"><div><span class="eyebrow">Присоединяйтесь</span><h2 class="section-title">Наше пространство.</h2></div><p class="section-copy">Публикации, общение и личные проекты. Всё важное в одном месте.</p></div>
+        <div class="channels">
+          <a class="channel-card reveal" href="https://t.me/stokarat0" target="_blank" rel="noopener noreferrer"><div class="channel-top"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg><svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 17 17 7M7 7h10v10"/></svg></div><h3>Канал проекта</h3><p>Статьи, разборы, OSINT-находки и материалы для обучения.</p></a>
+          <a class="channel-card reveal" href="https://t.me/+GJS4EetUZPZlYWU6" target="_blank" rel="noopener noreferrer"><div class="channel-top"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5 9 9 0 0 1-4-.9L3 21l1.9-5.5A9 9 0 1 1 21 11.5Z"/></svg><svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 17 17 7M7 7h10v10"/></svg></div><h3>Наше сообщество</h3><p>Обсуждения, вопросы, обмен опытом и совместное обучение.</p></a>
+          <a class="channel-card reveal" href="https://t.me/+WMBhvifJXj9hMjMy" target="_blank" rel="noopener noreferrer"><div class="channel-top"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 16V8h8M8 12h6"/></svg><svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 17 17 7M7 7h10v10"/></svg></div><h3>Портфолио</h3><p>Примеры работ, оформление материалов и другие проекты автора.</p></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section services" id="services">
+      <div class="container">
+        <div class="section-head reveal"><div><span class="eyebrow">Что мы предлагаем</span><h2 class="section-title">Услуги без<br>лишней сложности.</h2></div><p class="section-copy">Понятный формат результата, внимание к деталям и прямой контакт с исполнителем. Уточнить задачи можно в Telegram.</p></div>
+        <div class="service-grid">
+          <article class="service-card reveal">
+            <div class="service-top"><span class="service-type">Открытые источники</span><span class="offer">Горячая скидка −$2</span></div>
+            <h3>Open Brief</h3>
+            <p>Компактное досье: сбор и систематизация базовой информации из открытых, законно доступных источников по согласованной теме. Без закрытых баз, взлома и вторжения в частную жизнь.</p>
+            <div class="service-detail">Получаете сводку с источниками в удобном для вас формате: текст, PDF или таблица.</div>
+            <div class="service-bottom"><div><div class="price">$3 <span class="old-price">$5</span></div><span class="price-caption">Скидка $2 от обычной цены</span></div><button type="button" class="btn btn-secondary order-button" data-service="Open Brief" data-price="$3">Обсудить заказ ↗</button></div>
+          </article>
+          <article class="service-card featured reveal">
+            <div class="service-top"><span class="service-type">Расширенный анализ</span><span class="offer">Горячая скидка −$2</span></div>
+            <h3>Deep Map</h3>
+            <p>Более глубокое исследование открытых источников по согласованной теме: хронология, сопоставление фактов, анализ контекста и аккуратное оформление результатов.</p>
+            <div class="service-detail">Получаете расширенный структурированный отчёт и наглядный граф связей с указанием источников.</div>
+            <div class="service-bottom"><div><div class="price">$8 <span class="old-price">$10</span></div><span class="price-caption">Скидка $2 от обычной цены</span></div><button type="button" class="btn btn-primary order-button" data-service="Deep Map" data-price="$8">Обсудить заказ ↗</button></div>
+          </article>
+          <article class="service-card reveal">
+            <div class="service-top"><span class="service-type">Связь и технологии</span></div>
+            <h3>eSIM</h3>
+            <p>Помощь с подбором подходящего eSIM-тарифа для связи и путешествий. Расскажем об условиях и доступных вариантах под вашу задачу.</p>
+            <div class="service-detail">Итоговая стоимость зависит от выбранного тарифа и условий оператора.</div>
+            <div class="service-bottom"><div><div class="price" style="font-size:26px">По тарифу</div><span class="price-caption">Уточняйте лично</span></div><button type="button" class="btn btn-secondary order-button" data-service="Подбор eSIM" data-price="по тарифу">Узнать условия ↗</button></div>
+          </article>
+          <article class="service-card reveal">
+            <div class="service-top"><span class="service-type">Индивидуальное обучение</span></div>
+            <h3>OSINT-наставничество</h3>
+            <p>Лично и простыми словами объясню, что такое OSINT, покажу основы поиска, проверки информации и безопасной работы с открытыми источниками. Занятия — в удобном формате.</p>
+            <div class="service-detail">Вместе пройдём путь до первого самостоятельного учебного кейса и закрепим навыки на практике.</div>
+            <div class="service-bottom"><div><div class="price">$10 <small>/ месяц</small></div><span class="price-caption">Индивидуальный формат</span></div><button type="button" class="btn btn-secondary order-button" data-service="OSINT-наставничество" data-price="$10 / месяц">Начать обучение ↗</button></div>
+          </article>
+        </div>
+        <p class="service-notice">Все исследования проводятся только в рамках закона и этики: используем публичную, законно доступную информацию, не ищем частные контакты и чувствительные данные третьих лиц без надлежащих оснований. Детали и объём работы согласовываются до начала заказа. Скидки указаны на сайте; наличие предложения уточняйте при обращении.</p>
+      </div>
+    </section>
+
+    <section id="mentorship" class="section">
+      <div class="container">
+        <div class="mentor-strip reveal">
+          <div><span class="eyebrow">Для тех, кто хочет научиться</span><h3>Не знаешь, с чего начать OSINT?</h3><p>Не нужно разбираться во всём заранее. Вместе освоим поиск по открытым источникам, научимся оценивать достоверность информации, вести аккуратные заметки и оформим первый учебный разбор. Темп и формат общения подстроим под тебя.</p></div>
+          <button type="button" class="btn btn-primary order-button" data-service="OSINT-наставничество" data-price="$10 / месяц">Хочу попробовать ↗</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="faq" class="section" style="padding-top:0">
+      <div class="container faq-layout">
+        <div class="reveal"><span class="eyebrow">Ответы на вопросы</span><h2 class="section-title">Всё просто.<br>И по делу.</h2><p class="section-copy" style="margin-top:19px">Остались вопросы? Напишите владельцу проекта — обсудим формат, сроки и то, что именно вам нужно.</p></div>
+        <div class="faq-wrap reveal">
+          <details><summary>Чем отличается Open Brief от Deep Map?</summary><p>Open Brief — это короткая понятная сводка по открытым источникам. Deep Map — более подробный анализ с оформленным отчётом, сопоставлением фактов и графом связей, если материал позволяет их обоснованно показать.</p></details>
+          <details><summary>В каком формате я получу результат?</summary><p>Выбираем формат под задачу: текст, PDF или таблица. Для Deep Map добавляем визуализацию связей. Объём результата согласовывается перед началом работы.</p></details>
+          <details><summary>Можно ли начать обучение с нуля?</summary><p>Да. Наставничество рассчитано в том числе на новичков. Объясняю базовые принципы OSINT простыми словами, показываю инструменты на безопасных примерах и помогаю выполнить первый учебный кейс.</p></details>
+          <details><summary>С какими данными вы работаете?</summary><p>Только с открытой, законно доступной информацией в рамках согласованной задачи. Мы не получаем доступ к чужим аккаунтам, закрытым базам и не собираем чувствительную информацию с нарушением приватности.</p></details>
+          <details><summary>Как заказать услугу?</summary><p>Выберите нужную услугу и нажмите «Обсудить заказ». Можно скопировать готовое сообщение и отправить его владельцу проекта в Telegram. Заказ подтверждается только после личного обсуждения.</p></details>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="container">
+      <div class="contact reveal"><span class="eyebrow">Контакт с автором</span><h2>Есть идея? Давай обсудим.</h2><p>Сотрудничество, предложения, вопросы или услуги — всегда можно написать напрямую.</p><a href="https://t.me/jester_os1nt" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Написать @jester_os1nt <span aria-hidden="true">↗</span></a></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner"><a class="brand" href="#home"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M3 12 9 5h14l6 7-13 15L3 12Z"/><path d="M3 12h26M9 5l7 7 7-7M16 12v15"/></svg></span><span>100 <b>CARATS</b></span></a><span class="footer-note">Молодёжный любительский OSINT-проект.<br>Учимся разбираться в открытой информации вместе.</span><div class="footer-links"><a href="https://t.me/stokarat0" target="_blank" rel="noopener noreferrer">Канал ↗</a><a href="https://t.me/+GJS4EetUZPZlYWU6" target="_blank" rel="noopener noreferrer">Сообщество ↗</a><a href="https://t.me/jester_os1nt" target="_blank" rel="noopener noreferrer">Контакт ↗</a></div></div>
+  </footer>
+
+  <div class="dialog-backdrop" id="orderDialog" role="presentation">
+    <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dialogTitle" aria-describedby="dialogDescription" tabindex="-1">
+      <div class="dialog-head"><div><span class="eyebrow">Запрос на услугу</span><h2 id="dialogTitle">Написать владельцу</h2></div><button type="button" class="close-modal" id="closeDialog" aria-label="Закрыть окно">×</button></div>
+      <p id="dialogDescription">Скопируйте текст заявки и отправьте его в Telegram. Это не автоматический заказ: детали можно обсудить лично.</p>
+      <div class="message-preview" id="messagePreview"></div>
+      <div class="modal-actions"><button type="button" class="btn btn-primary" id="copyMessage">Скопировать сообщение ⧉</button><a class="btn btn-secondary" href="https://t.me/jester_os1nt" target="_blank" rel="noopener noreferrer">Открыть Telegram ↗</a></div>
+    </div>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script>
+    // Mobile navigation
+    const menuButton = document.getElementById('menuButton');
+    const mobileMenu = document.getElementById('mobileMenu');
+    function closeMenu() { mobileMenu.classList.remove('open'); menuButton.setAttribute('aria-expanded', 'false'); menuButton.setAttribute('aria-label', 'Открыть меню'); }
+    menuButton.addEventListener('click', () => {
+      const open = mobileMenu.classList.toggle('open');
+      menuButton.setAttribute('aria-expanded', String(open));
+      menuButton.setAttribute('aria-label', open ? 'Закрыть меню' : 'Открыть меню');
+    });
+    mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
+
+    // Reveal animations (elements remain visible without IntersectionObserver)
+    const revealItems = document.querySelectorAll('.reveal');
+    if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const observer = new IntersectionObserver(entries => { entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); } }); }, { threshold: .08, rootMargin: '0px 0px 40px 0px' });
+      revealItems.forEach(el => observer.observe(el));
+    } else revealItems.forEach(el => el.classList.add('visible'));
+
+    // Order dialog: prepare a message for copying; no personal data is collected by the site.
+    const backdrop = document.getElementById('orderDialog');
+    const modal = backdrop.querySelector('.dialog');
+    const preview = document.getElementById('messagePreview');
+    const dialogTitle = document.getElementById('dialogTitle');
+    const toast = document.getElementById('toast');
+    let messageText = '';
+    let previousFocus = null;
+    let toastTimeout;
+    function showToast(text) { toast.textContent = text; toast.classList.add('show'); clearTimeout(toastTimeout); toastTimeout = setTimeout(() => toast.classList.remove('show'), 2600); }
+    function openDialog(service, price) {
+      previousFocus = document.activeElement;
+      dialogTitle.textContent = service;
+      messageText = `Привет! Хочу узнать подробнее об услуге «${service}» (цена на сайте: ${price}). Расскажи, пожалуйста, об условиях и порядке работы.`;
+      preview.textContent = messageText;
+      backdrop.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      document.getElementById('closeDialog').focus();
+    }
+    function closeDialog() { if (!backdrop.classList.contains('open')) return; backdrop.classList.remove('open'); document.body.style.overflow = ''; if (previousFocus) previousFocus.focus(); }
+    document.querySelectorAll('.order-button').forEach(button => button.addEventListener('click', () => openDialog(button.dataset.service, button.dataset.price)));
+    document.getElementById('closeDialog').addEventListener('click', closeDialog);
+    backdrop.addEventListener('click', e => { if (e.target === backdrop) closeDialog(); });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeDialog();
+      if (e.key === 'Tab' && backdrop.classList.contains('open')) {
+        const items = [...modal.querySelectorAll('button, a[href]')];
+        const first = items[0], last = items[items.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    });
+    document.getElementById('copyMessage').addEventListener('click', async () => {
+      try {
+        if (!navigator.clipboard || !window.isSecureContext) throw new Error('clipboard unavailable');
+        await navigator.clipboard.writeText(messageText);
+        showToast('Текст скопирован — отправьте его в Telegram');
+      } catch {
+        const field = document.createElement('textarea'); field.value = messageText; field.style.position='fixed'; field.style.opacity='0'; document.body.appendChild(field); field.select();
+        try { const ok = document.execCommand('copy'); showToast(ok ? 'Текст скопирован' : 'Выделите текст заявки и скопируйте его'); }
+        catch { showToast('Выделите текст заявки и скопируйте его'); }
+        field.remove();
+      }
+    });
+
+    // Interactive, rotating OSINT knowledge graph. Vanilla Canvas; no libraries required.
+    (() => {
+      const canvas = document.getElementById('graphCanvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      const tooltip = document.getElementById('graphTooltip');
+      const toggle = document.getElementById('graphToggle');
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+      let playing = !reduceMotion.matches;
+      let width = 0, height = 0, pixelRatio = 1, time = 0, frame = 0, lastTime = 0;
+      let hovered = -1;
+      const nodes = [
+        { name: 'ИСТОЧНИКИ', x: -.33, y: -.13, r: 7.0, a: 0 },
+        { name: 'ФАКТЫ', x: .13, y: -.31, r: 8.0, a: 1 },
+        { name: 'СВЯЗИ', x: .28, y: .13, r: 6.5, a: 2 },
+        { name: 'КОНТЕКСТ', x: -.22, y: .31, r: 6.4, a: 3 },
+        { name: 'ВЫВОДЫ', x: .015, y: .02, r: 12, a: 4, primary: true },
+        { name: 'ПОИСК', x: -.49, y: -.39, r: 4, a: 5 },
+        { name: 'ПРОВЕРКА', x: .46, y: -.34, r: 4, a: 6 },
+        { name: 'ДАННЫЕ', x: .50, y: .38, r: 4.1, a: 7 },
+        { name: 'АНАЛИЗ', x: -.48, y: .39, r: 4, a: 8 },
+        { name: 'СИГНАЛ', x: -.04, y: -.52, r: 3.5, a: 9 },
+        { name: 'ГИПОТЕЗА', x: .08, y: .49, r: 4, a: 10 },
+        { name: 'ДЕТАЛИ', x: .51, y: -.02, r: 3, a: 11 },
+        { name: 'ДОКАЗАТЕЛЬСТВА', x: -.48, y: .03, r: 3, a: 12 }
+      ];
+      const links = [[0,4],[1,4],[2,4],[3,4],[0,1],[1,2],[2,3],[3,0],[5,0],[6,1],[7,2],[8,3],[9,1],[10,3],[11,2],[12,0],[6,11],[7,10],[5,12],[0,2]];
+      const pointer = { x:-9999,y:-9999 };
+      function resize() {
+        const rect = canvas.getBoundingClientRect(); width = rect.width; height = rect.height;
+        pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+        canvas.width = Math.round(width * pixelRatio); canvas.height = Math.round(height * pixelRatio);
+        ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+        render();
+      }
+      function position(node) {
+        const scale = Math.min(width, height) * .64;
+        // Gentle rotational drift (different layer phases give a living network feeling).
+        const rot = time * .085 + Math.sin(time*.3 + node.a*.7) * .018;
+        const cs = Math.cos(rot), sn = Math.sin(rot);
+        return { x: width*.5 + (node.x*cs-node.y*sn)*scale, y:height*.49+(node.x*sn+node.y*cs)*scale };
+      }
+      function render() {
+        ctx.clearRect(0,0,width,height);
+        const coords = nodes.map(position);
+        ctx.lineCap = 'round';
+        // Ambient orbital rings
+        ctx.save(); ctx.translate(width*.5,height*.49); ctx.rotate(-time*.025);
+        [0.27,0.40].forEach((f,i) => {
+          ctx.beginPath(); ctx.ellipse(0,0,Math.min(width,height)*f,Math.min(width,height)*f*.77, -.22, 0, Math.PI*2);
+          ctx.strokeStyle = i ? 'rgba(186,255,121,.05)' : 'rgba(186,255,121,.075)'; ctx.setLineDash(i?[2,9]:[5,9]); ctx.lineWidth=1; ctx.stroke();
+        }); ctx.restore(); ctx.setLineDash([]);
+        links.forEach(([a,b],i) => {
+          const p=coords[a], q=coords[b]; const related = hovered===a || hovered===b;
+          ctx.beginPath(); ctx.moveTo(p.x,p.y);ctx.lineTo(q.x,q.y);
+          ctx.strokeStyle = related ? 'rgba(186,255,121,.64)' : 'rgba(136,225,145,.20)'; ctx.lineWidth=related?1.4:.85;ctx.stroke();
+          if (i<12) {
+            const f = (time*.10 + i*.117)%1; const x=p.x+(q.x-p.x)*f, y=p.y+(q.y-p.y)*f;
+            ctx.beginPath(); ctx.arc(x,y,1.65,0,Math.PI*2);ctx.fillStyle='rgba(186,255,121,.62)';ctx.fill();
+          }
+        });
+        coords.forEach((p,i) => {
+          const n=nodes[i], active=hovered===i || n.primary;
+          if (active) { const grad=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,36);grad.addColorStop(0,'rgba(186,255,121,.20)');grad.addColorStop(1,'rgba(186,255,121,0)');ctx.fillStyle=grad;ctx.beginPath();ctx.arc(p.x,p.y,36,0,Math.PI*2);ctx.fill(); }
+          ctx.beginPath();ctx.arc(p.x,p.y,n.r+4,0,Math.PI*2);ctx.strokeStyle=active?'rgba(186,255,121,.35)':'rgba(186,255,121,.14)';ctx.lineWidth=1;ctx.stroke();
+          ctx.beginPath();ctx.arc(p.x,p.y,n.r,0,Math.PI*2);ctx.fillStyle=n.primary?'#baff79':hovered===i?'#d8ffb5':'#83c68c';ctx.fill();
+          if (n.primary) { ctx.fillStyle='#07120b';ctx.beginPath();ctx.arc(p.x,p.y,3.4,0,Math.PI*2);ctx.fill(); }
+          if (i<5 || hovered===i) {
+            ctx.fillStyle=active?'#dbffd6':'rgba(196,220,197,.86)';ctx.font=(n.primary?'700 10px ':'600 9px ')+'Inter,system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillText(n.name,p.x,p.y+(n.r+19));
+          }
+        });
+      }
+      function animate(timestamp) {
+        if (!playing || document.hidden) { frame=0; return; }
+        const dt = lastTime ? Math.min((timestamp-lastTime)/1000,.05) : .016;
+        lastTime=timestamp; time+=dt; render(); frame=requestAnimationFrame(animate);
+      }
+      function setPlaying(next) {
+        playing=next; toggle.textContent=playing?'Пауза ⏸':'Продолжить ▶';toggle.setAttribute('aria-pressed', String(!playing));
+        cancelAnimationFrame(frame);lastTime=0;render();if (playing&&!document.hidden)frame=requestAnimationFrame(animate);
+      }
+      toggle.addEventListener('click',()=>setPlaying(!playing));
+      canvas.addEventListener('pointermove', e=>{
+        const rect=canvas.getBoundingClientRect(); pointer.x=e.clientX-rect.left; pointer.y=e.clientY-rect.top;
+        const coords=nodes.map(position); let nearest=-1, dist=24;
+        coords.forEach((p,i)=>{const d=Math.hypot(p.x-pointer.x,p.y-pointer.y);if(d<dist){dist=d;nearest=i;}});
+        hovered=nearest;tooltip.textContent=nearest===-1?'':nodes[nearest].name;
+        tooltip.classList.toggle('visible',nearest!==-1);if(!playing)render();
+      });
+      canvas.addEventListener('pointerleave',()=>{hovered=-1;tooltip.classList.remove('visible');if(!playing)render();});
+      document.addEventListener('visibilitychange',()=>{cancelAnimationFrame(frame);lastTime=0;if(playing&&!document.hidden)frame=requestAnimationFrame(animate);});
+      reduceMotion.addEventListener?.('change', e => setPlaying(!e.matches));
+      if('ResizeObserver' in window) new ResizeObserver(resize).observe(canvas); else window.addEventListener('resize', resize);
+      resize();if(playing)frame=requestAnimationFrame(animate);else toggle.textContent='Продолжить ▶';
+    })();
+  </script>
+</body>
+</html>
